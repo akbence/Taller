@@ -20,4 +20,13 @@ public class UserService {
                 .map((username) -> UserDto.builder().username(username).build())
                 .toList();
     }
+
+    public UserDto createUser(UserDto userDto) {
+        AppUserEntity appUserEntity = new AppUserEntity();
+        appUserEntity.setUsername(userDto.getUsername());
+        AppUserEntity savedEntity = appUserRepository.save(appUserEntity);
+        return UserDto.builder()
+                .username(savedEntity.getUsername())
+                .build();
+    }
 }
