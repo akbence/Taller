@@ -8,8 +8,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "app_user")
 @Data
-public class AppUserEntity extends BaseEntity{
+public class AppUserEntity extends BaseEntity {
 
     private String username;
+    private String password;
 
 }
