@@ -2,10 +2,7 @@ package hu.codemosaic.taller.entity;
 
 import hu.codemosaic.taller.enums.AccountType;
 import hu.codemosaic.taller.enums.Currency;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,6 +15,8 @@ public class SubAccountEntity extends BaseEntity {
 
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AccountType accountType;
 
     private Currency currency;
