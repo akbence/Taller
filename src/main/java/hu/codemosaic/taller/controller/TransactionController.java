@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/transaction")
 @RequiredArgsConstructor
-public class TransactionController {
+public class TransactionController extends BaseApiController{
 
     private final TransactionService transactionService;
 

@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/account")
 @RequiredArgsConstructor
-public class AccountController {
+public class AccountController extends BaseApiController{
 
     private final AccountService accountService;
 

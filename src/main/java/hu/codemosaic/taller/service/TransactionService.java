@@ -1,8 +1,6 @@
 package hu.codemosaic.taller.service;
 
-import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.dto.AccountTransactionDto;
-import hu.codemosaic.taller.entity.AccountEntity;
 import hu.codemosaic.taller.entity.AccountTransactionEntity;
 import hu.codemosaic.taller.repository.AccountTransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    private final AccountTransactionRepository accountTransactionRepository;;
+    private final AccountTransactionRepository accountTransactionRepository;
 
     public AccountTransactionDto createTransaction(AccountTransactionDto accountTransactionDto) {
         AccountTransactionEntity entity = new AccountTransactionEntity();
