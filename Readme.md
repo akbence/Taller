@@ -1,6 +1,6 @@
 # 🚀 Project Tallér
 
-[![SonarCloud](https://sonarcloud.io/images/project_badge.svg)](https://sonarcloud.io/project/overview?id=my-org_my-project)
+[![SonarCloud](https://sonarcloud.io/images/project_badge.svg)](https://sonarcloud.io/project/overview?id=codemosaic_taller-backend)
 
 This project uses [SonarCloud](https://sonarcloud.io) for continuous code quality inspection.  
 It automatically analyzes code for bugs, vulnerabilities, and code smells on every push and pull request.
