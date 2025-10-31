@@ -11,7 +11,6 @@ import static jakarta.persistence.FetchType.LAZY;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-
 public class CategoryEntity extends BaseEntity{
 
     private String name;
