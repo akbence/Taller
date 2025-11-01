@@ -62,7 +62,7 @@ tasks.named('test') {
 
 sonar {
 	properties {
-		property "sonar.projectKey", "taller-backend"
+		property "sonar.projectKey", "Taller"
 		property "sonar.organization", "codemosaic"
 	}
 }

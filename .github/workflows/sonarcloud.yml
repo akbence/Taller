@@ -32,7 +32,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           args: >
-            -Dsonar.projectKey=taller-backend
+            -Dsonar.projectKey=Taller
             -Dsonar.organization=codemosaic
             -Dsonar.host.url=https://sonarcloud.io
         env:
