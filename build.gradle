@@ -103,11 +103,39 @@ jacocoTestReport {
 	}
 }
 
+// Enable Jacoco for integration tests
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+	jacoco {
+		enabled = true
+	}
+}
+
+// Create a merged Jacoco report for SonarCloud
+tasks.register('jacocoMergedReport', JacocoReport) {
+	dependsOn tasks.test, tasks.integrationTest
+
+	executionData.from = fileTree(layout.buildDirectory.get().asFile).include(
+			"jacoco/test.exec",
+			"jacoco/test/*.exec",
+			"jacoco/integrationTest.exec",
+			"jacoco/integrationTest/*.exec"
+	)
+
+	sourceSets sourceSets.main
+
+	reports {
+		xml.required = true
+		xml.outputLocation = layout.buildDirectory.file("reports/jacoco/merged/jacocoMergedReport.xml")
+		html.required = true
+	}
+}
+
 sonar {
 	properties {
 		property "sonar.projectKey", "codemosaic_Taller"
 		property "sonar.organization", "codemosaic"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property "sonar.coverage.jacoco.xmlReportPaths", layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.path
+		property "sonar.coverage.jacoco.xmlReportPaths", layout.buildDirectory.file("reports/jacoco/merged/jacocoMergedReport.xml").get().asFile.path
 	}
 }

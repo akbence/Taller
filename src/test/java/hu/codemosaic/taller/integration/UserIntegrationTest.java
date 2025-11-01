@@ -12,7 +12,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +20,6 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Integration tests for the User REST API using RestAssured.
- *
  * NOTE: This requires a running Spring Boot application and
  * will attempt to interact with the actual controller logic and (mocked) dependencies.
  */
