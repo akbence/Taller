@@ -35,5 +35,6 @@ jobs:
             -Dsonar.projectKey=Taller
             -Dsonar.organization=codemosaic
             -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=$SONAR_TOKEN
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
