@@ -42,7 +42,7 @@ dependencies {
 
 	runtimeOnly 'org.springframework.modulith:spring-modulith-actuator'
 	runtimeOnly 'org.springframework.modulith:spring-modulith-observability'
-	runtimeOnly 'com.h2database:h2' // In-memory database for development and testing
+	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
@@ -50,6 +50,9 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+	testImplementation 'io.rest-assured:rest-assured:5.4.0'
+	testImplementation 'io.rest-assured:json-path:5.4.0'
+	testImplementation 'io.rest-assured:json-schema-validator:5.4.0'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -60,8 +63,35 @@ dependencyManagement {
 	}
 }
 
+/**
+ * Separate tests based on package:
+ * - Unit tests: hu.codemosaic.taller.unit.*
+ * - Integration tests: hu.codemosaic.taller.integration.*
+ */
 tasks.named('test') {
+	description = "Runs unit tests only."
+	group = "verification"
 	useJUnitPlatform()
+
+	// Only include unit tests (exclude integration)
+	include '**/unit/**'
+	exclude '**/integration/**'
+}
+
+def integrationTest = tasks.register("integrationTest", Test) {
+	description = "Runs integration tests only."
+	group = "verification"
+	useJUnitPlatform()
+
+	// Only include integration tests
+	include '**/integration/**'
+
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+}
+
+tasks.named('check') {
+	dependsOn integrationTest
 }
 
 jacocoTestReport {

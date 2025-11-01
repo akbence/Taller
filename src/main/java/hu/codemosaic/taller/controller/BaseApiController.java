@@ -1,7 +1,5 @@
 package hu.codemosaic.taller.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
-@RequestMapping("/api/v1")
 public abstract class BaseApiController {
+    protected static final String BASE_PATH = "/api/v1";
 }

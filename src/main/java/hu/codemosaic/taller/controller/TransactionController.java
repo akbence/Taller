@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transaction")
+@RequestMapping(BaseApiController.BASE_PATH + "/transaction")
 @RequiredArgsConstructor
 public class TransactionController extends BaseApiController{
 

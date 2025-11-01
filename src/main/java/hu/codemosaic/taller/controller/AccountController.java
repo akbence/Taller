@@ -10,7 +10,7 @@ import hu.codemosaic.taller.service.AccountService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping(BaseApiController.BASE_PATH + "/account")
 @RequiredArgsConstructor
 public class AccountController extends BaseApiController{
 
