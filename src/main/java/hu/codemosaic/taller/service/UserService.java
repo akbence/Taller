@@ -3,6 +3,7 @@ package hu.codemosaic.taller.service;
 import hu.codemosaic.taller.dto.UserDto;
 import hu.codemosaic.taller.entity.AppUserEntity;
 import hu.codemosaic.taller.repository.AppUserRepository;
+import hu.codemosaic.taller.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class UserService {
 
     private final AppUserRepository appUserRepository;
+    private final JwtService jwtService;
 
     public List<UserDto> getAllUsers() {
         return appUserRepository.findAll()
@@ -28,5 +30,11 @@ public class UserService {
         return UserDto.builder()
                 .username(savedEntity.getUsername())
                 .build();
+    }
+
+    public String login(String username, String password) {
+        //Todo: implement real authentication for password
+        var user = appUserRepository.findByUsername(username);
+        return user.map(appUserEntity -> jwtService.generateToken(appUserEntity.getUsername())).orElse(null);
     }
 }

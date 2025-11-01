@@ -1,5 +1,6 @@
 package hu.codemosaic.taller.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -9,7 +10,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 @Component
+@RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
+
+    private final JwtService jwtService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -69,12 +73,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         return false; // Access denied
     }
 
-    /**
-     * Placeholder token validation logic.
-     * In a real app, you'd decode a JWT or query a database.
-     */
     private boolean isValidToken(String token) {
-        // TODO: Implement real token validation
-        return "my-secret-token".equals(token);
+        return jwtService.isValidToken(token);
     }
 }

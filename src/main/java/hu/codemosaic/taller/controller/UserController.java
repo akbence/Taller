@@ -1,6 +1,9 @@
 package hu.codemosaic.taller.controller;
 
+import hu.codemosaic.taller.dto.LoginRequest;
+import hu.codemosaic.taller.dto.TokenResponse;
 import hu.codemosaic.taller.dto.UserDto;
+import hu.codemosaic.taller.security.NoAuth;
 import hu.codemosaic.taller.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,5 +33,13 @@ public class UserController extends BaseApiController{
         UserDto created = userService.createUser(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @NoAuth
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+        var token = userService.login(request.getUsername(), request.getPassword());
+        return token != null ? ResponseEntity.ok(new TokenResponse(token)) :  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
 
 }
