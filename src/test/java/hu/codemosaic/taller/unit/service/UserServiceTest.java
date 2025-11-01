@@ -3,6 +3,7 @@ package hu.codemosaic.taller.unit.service;
 import hu.codemosaic.taller.dto.UserDto;
 import hu.codemosaic.taller.entity.AppUserEntity;
 import hu.codemosaic.taller.repository.AppUserRepository;
+import hu.codemosaic.taller.security.JwtService;
 import hu.codemosaic.taller.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,12 @@ class UserServiceTest {
 
     private AppUserRepository appUserRepository;
     private UserService userService;
+    private JwtService jwtService;
 
     @BeforeEach
     void setUp() {
         appUserRepository = mock(AppUserRepository.class);
-        userService = new UserService(appUserRepository);
+        userService = new UserService(appUserRepository, jwtService);
     }
 
     @Test

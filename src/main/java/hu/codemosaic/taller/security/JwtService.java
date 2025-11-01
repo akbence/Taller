@@ -4,14 +4,18 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    private static final String JWT_SECRET_KEY = "your-very-secret-key-should-be-256-bit";
+    @Value("${jwt.secret}")
+    private final String JWT_SECRET_KEY;
 
     public String generateToken(String username) {
         return Jwts.builder()
