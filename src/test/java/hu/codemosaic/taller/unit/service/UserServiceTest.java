@@ -1,8 +1,8 @@
 package hu.codemosaic.taller.unit.service;
 
+import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.dto.UserDto;
 import hu.codemosaic.taller.entity.AppUserEntity;
-import hu.codemosaic.taller.repository.AppUserRepository;
 import hu.codemosaic.taller.security.JwtService;
 import hu.codemosaic.taller.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,28 +12,25 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
-    private AppUserRepository appUserRepository;
+    private AppUserDb appUserDb;
     private UserService userService;
     private JwtService jwtService;
 
     @BeforeEach
     void setUp() {
         // Initialize Mocks
-        appUserRepository = mock(AppUserRepository.class);
+        appUserDb = mock(AppUserDb.class);
         jwtService = mock(JwtService.class);
 
         // Initialize Service with Mocks
-        userService = new UserService(appUserRepository, jwtService);
+        userService = new UserService(appUserDb, jwtService);
     }
     @BeforeEach
     void logTestStart(TestInfo testInfo) {
@@ -48,7 +45,7 @@ class UserServiceTest {
         AppUserEntity user2 = new AppUserEntity();
         user2.setUsername("bob");
 
-        when(appUserRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
+        when(appUserDb.findAll()).thenReturn(Arrays.asList(user1, user2));
 
         // Act
         List<UserDto> result = userService.getAllUsers();
@@ -57,7 +54,7 @@ class UserServiceTest {
         assertEquals(2, result.size());
         assertEquals("alice", result.get(0).getUsername());
         assertEquals("bob", result.get(1).getUsername());
-        verify(appUserRepository, times(1)).findAll();
+        verify(appUserDb, times(1)).findAll();
     }
 
     @Test
@@ -67,7 +64,7 @@ class UserServiceTest {
         AppUserEntity savedEntity = new AppUserEntity();
         savedEntity.setUsername("charlie");
 
-        when(appUserRepository.save(any(AppUserEntity.class))).thenReturn(savedEntity);
+        when(appUserDb.save(any(AppUserEntity.class))).thenReturn(savedEntity);
 
         // Act
         UserDto result = userService.createUser(inputDto);
@@ -77,7 +74,7 @@ class UserServiceTest {
         assertEquals("charlie", result.getUsername());
 
         ArgumentCaptor<AppUserEntity> captor = ArgumentCaptor.forClass(AppUserEntity.class);
-        verify(appUserRepository).save(captor.capture());
+        verify(appUserDb).save(captor.capture());
         assertEquals("charlie", captor.getValue().getUsername());
     }
 
@@ -91,7 +88,7 @@ class UserServiceTest {
         AppUserEntity userEntity = new AppUserEntity();
         userEntity.setUsername(username);
 
-        when(appUserRepository.findByUsername(username)).thenReturn(Optional.of(userEntity));
+        when(appUserDb.findByUsername(username)).thenReturn(userEntity);
         when(jwtService.generateToken(username)).thenReturn(expectedToken);
 
         // Act
@@ -100,7 +97,7 @@ class UserServiceTest {
         // Assert
         assertNotNull(resultToken);
         assertEquals(expectedToken, resultToken);
-        verify(appUserRepository, times(1)).findByUsername(username);
+        verify(appUserDb, times(1)).findByUsername(username);
         verify(jwtService, times(1)).generateToken(username);
     }
 
@@ -110,14 +107,12 @@ class UserServiceTest {
         String username = "nonexistent";
         String password = "anypassword";
 
-        when(appUserRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(appUserDb.findByUsername(username)).thenThrow(RuntimeException.class);
 
         // Act
-        String resultToken = userService.login(username, password);
-
         // Assert
-        assertNull(resultToken);
-        verify(appUserRepository, times(1)).findByUsername(username);
+        assertThrows(RuntimeException.class, ()-> userService.login(username, password));
+        verify(appUserDb, times(1)).findByUsername(username);
         verify(jwtService, never()).generateToken(anyString()); // Ensure token generation is skipped
     }
 }

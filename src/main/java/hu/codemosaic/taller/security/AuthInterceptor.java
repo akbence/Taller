@@ -61,8 +61,13 @@ public class AuthInterceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
 
         // Example: Check if a valid "Bearer token" exists
-        if (token != null && token.startsWith("Bearer ") && isValidToken(token.substring(7))) {
-            return true; // User is authenticated
+        if (token != null && token.startsWith("Bearer ")) {
+            String rawToken = token.substring(7);
+            if (jwtService.isValidToken(rawToken)) {
+                String username = jwtService.extractUsername(rawToken);
+                UserContext.setUsername(username); // ✅ store in context
+                return true;
+            }
         }
 
         // --- End of placeholder logic ---
@@ -75,5 +80,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private boolean isValidToken(String token) {
         return jwtService.isValidToken(token);
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        UserContext.clear(); // ✅ cleanup
     }
 }

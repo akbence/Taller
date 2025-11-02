@@ -12,7 +12,6 @@ public class AccountDto {
 
     private String name;
     private AccountType accountType;
-    private UserDto owner;
     private List<SubAccountDto> subaccounts;
 
 

@@ -1,8 +1,8 @@
 package hu.codemosaic.taller.unit.service;
 
+import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.dto.SubAccountDto;
-import hu.codemosaic.taller.dto.UserDto;
 import hu.codemosaic.taller.entity.AccountEntity;
 import hu.codemosaic.taller.entity.SubAccountEntity;
 import hu.codemosaic.taller.enums.Currency;
@@ -21,11 +21,13 @@ class AccountServiceTest {
 
     private AccountRepository accountRepository;
     private AccountService accountService;
+    private AppUserDb appUserDb;
 
     @BeforeEach
     void setup() {
         accountRepository = mock(AccountRepository.class);
-        accountService = new AccountService(accountRepository);
+        appUserDb = mock(AppUserDb.class);
+        accountService = new AccountService(accountRepository, appUserDb);
     }
 
     @Test
@@ -52,7 +54,6 @@ class AccountServiceTest {
         assertEquals(1, result.size());
         AccountDto dto = result.getFirst();
         assertEquals("Main Account", dto.getName());
-        assertEquals("john_doe", dto.getOwner().getUsername());
         assertEquals(1, dto.getSubaccounts().size());
         assertEquals("Savings", dto.getSubaccounts().getFirst().getName());
     }
@@ -69,7 +70,6 @@ class AccountServiceTest {
         AccountDto inputDto = AccountDto.builder()
                 .name("New Account")
                 .subaccounts(List.of(subDto))
-                .owner(UserDto.builder().username("jane_doe").build()) // not used yet
                 .build();
 
         SubAccountEntity subEntity = new SubAccountEntity();
@@ -85,13 +85,13 @@ class AccountServiceTest {
         savedEntity.setOwner(appUserEntity); // assuming constructor or setter
 
         when(accountRepository.save(any(AccountEntity.class))).thenReturn(savedEntity);
+        when(appUserDb.findByUsername("jane_doe")).thenReturn(appUserEntity);
 
         // Act
-        AccountDto result = accountService.createAccount(inputDto);
+        AccountDto result = accountService.createAccount(inputDto, "jane_doe");
 
         // Assert
         assertEquals("New Account", result.getName());
-        assertEquals("jane_doe", result.getOwner().getUsername());
         assertEquals(1, result.getSubaccounts().size());
         assertEquals("Checking", result.getSubaccounts().getFirst().getName());
     }

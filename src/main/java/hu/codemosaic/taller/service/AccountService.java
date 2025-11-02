@@ -1,8 +1,8 @@
 package hu.codemosaic.taller.service;
 
+import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.dto.SubAccountDto;
-import hu.codemosaic.taller.dto.UserDto;
 import hu.codemosaic.taller.entity.AccountEntity;
 import hu.codemosaic.taller.entity.SubAccountEntity;
 import hu.codemosaic.taller.repository.AccountRepository;
@@ -16,11 +16,11 @@ import java.util.List;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AppUserDb appUserDb;
 
     public List<AccountDto> getAllAccounts() {
         return accountRepository.findAll().stream().map(accountEntity -> AccountDto.builder()
                 .name(accountEntity.getName())
-                .owner(UserDto.builder().username(accountEntity.getOwner().getUsername()).build())
                 .subaccounts(accountEntity.getSubaccounts().stream()
                     .map(entity -> SubAccountDto.builder()
                         .name(entity.getName())
@@ -33,15 +33,14 @@ public class AccountService {
             .toList();
     }
 
-    public AccountDto createAccount(AccountDto accountDto) {
+    public AccountDto createAccount(AccountDto accountDto, String currentUsername) {
         AccountEntity entity = new AccountEntity();
         entity.setName(accountDto.getName());
-        entity.setOwner(null); // TODO: set owner from accountDto
+        entity.setOwner(appUserDb.findByUsername(currentUsername));
         entity.setSubaccounts(mapSubAccountEntitiesFromAccountDto(accountDto));
         var result = accountRepository.save(entity);
         return AccountDto.builder()
                 .name(result.getName())
-                .owner(UserDto.builder().username(result.getOwner().getUsername()).build())
                 .subaccounts(result.getSubaccounts().stream()
                     .map(subEntity -> SubAccountDto.builder()
                         .name(subEntity.getName())

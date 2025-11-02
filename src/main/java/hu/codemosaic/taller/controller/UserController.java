@@ -2,6 +2,7 @@ package hu.codemosaic.taller.controller;
 
 import hu.codemosaic.taller.dto.TokenResponse;
 import hu.codemosaic.taller.dto.UserDto;
+import hu.codemosaic.taller.security.NoAuth;
 import hu.codemosaic.taller.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class UserController extends BaseApiController{
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @NoAuth
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
         UserDto created = userService.createUser(userDto);
