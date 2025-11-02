@@ -1,6 +1,6 @@
 package hu.codemosaic.taller.controller;
 
-import hu.codemosaic.taller.dto.AccountDto;
+import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.security.Auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,13 +19,13 @@ public class AccountController extends BaseApiController{
 
     @Auth
     @PostMapping
-    public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.createAccount(accountDto, getCurrentUsername()));
+    public ResponseEntity<AccountContainerDto> createAccountContainer(@RequestBody AccountContainerDto accountContainerDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.createAccount(accountContainerDto, getCurrentUsername()));
 
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountDto>> getAccount() {
+    public ResponseEntity<List<AccountContainerDto>> getAccount() {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 }

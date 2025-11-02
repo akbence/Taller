@@ -1,12 +1,12 @@
 package hu.codemosaic.taller.unit.service;
 
 import hu.codemosaic.taller.db.AppUserDb;
+import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.dto.AccountDto;
-import hu.codemosaic.taller.dto.SubAccountDto;
+import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.entity.AccountEntity;
-import hu.codemosaic.taller.entity.SubAccountEntity;
 import hu.codemosaic.taller.enums.Currency;
-import hu.codemosaic.taller.repository.AccountRepository;
+import hu.codemosaic.taller.repository.AccountContainerRepository;
 import hu.codemosaic.taller.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,40 +19,40 @@ import static org.mockito.Mockito.*;
 
 class AccountServiceTest {
 
-    private AccountRepository accountRepository;
+    private AccountContainerRepository accountContainerRepository;
     private AccountService accountService;
     private AppUserDb appUserDb;
 
     @BeforeEach
     void setup() {
-        accountRepository = mock(AccountRepository.class);
+        accountContainerRepository = mock(AccountContainerRepository.class);
         appUserDb = mock(AppUserDb.class);
-        accountService = new AccountService(accountRepository, appUserDb);
+        accountService = new AccountService(accountContainerRepository, appUserDb);
     }
 
     @Test
     void testGetAllAccounts_returnsMappedDtos() {
         // Arrange
-        SubAccountEntity sub1 = new SubAccountEntity();
+        AccountEntity sub1 = new AccountEntity();
         sub1.setName("Savings");
         sub1.setBalance(BigDecimal.valueOf(1000));
         sub1.setCurrency(Currency.USD);
 
-        AccountEntity accountEntity = new AccountEntity();
-        accountEntity.setName("Main Account");
-        accountEntity.setSubaccounts(List.of(sub1));
+        AccountContainerEntity accountContainerEntity = new AccountContainerEntity();
+        accountContainerEntity.setName("Main Account");
+        accountContainerEntity.setAccounts(List.of(sub1));
         var appUserEntity = new hu.codemosaic.taller.entity.AppUserEntity();
         appUserEntity.setUsername("john_doe");
-        accountEntity.setOwner(appUserEntity);
+        accountContainerEntity.setOwner(appUserEntity);
 
-        when(accountRepository.findAll()).thenReturn(List.of(accountEntity));
+        when(accountContainerRepository.findAll()).thenReturn(List.of(accountContainerEntity));
 
         // Act
-        List<AccountDto> result = accountService.getAllAccounts();
+        List<AccountContainerDto> result = accountService.getAllAccounts();
 
         // Assert
         assertEquals(1, result.size());
-        AccountDto dto = result.getFirst();
+        AccountContainerDto dto = result.getFirst();
         assertEquals("Main Account", dto.getName());
         assertEquals(1, dto.getSubaccounts().size());
         assertEquals("Savings", dto.getSubaccounts().getFirst().getName());
@@ -61,34 +61,34 @@ class AccountServiceTest {
     @Test
     void testCreateAccount_savesAndReturnsMappedDto() {
         // Arrange
-        SubAccountDto subDto = SubAccountDto.builder()
+        AccountDto subDto = AccountDto.builder()
                 .name("Checking")
                 .balance(BigDecimal.valueOf(500))
                 .currency(Currency.EUR)
                 .build();
 
-        AccountDto inputDto = AccountDto.builder()
+        AccountContainerDto inputDto = AccountContainerDto.builder()
                 .name("New Account")
                 .subaccounts(List.of(subDto))
                 .build();
 
-        SubAccountEntity subEntity = new SubAccountEntity();
+        AccountEntity subEntity = new AccountEntity();
         subEntity.setName("Checking");
         subEntity.setBalance(BigDecimal.valueOf(500));
         subEntity.setCurrency(Currency.EUR);
 
-        AccountEntity savedEntity = new AccountEntity();
+        AccountContainerEntity savedEntity = new AccountContainerEntity();
         savedEntity.setName("New Account");
-        savedEntity.setSubaccounts(List.of(subEntity));
+        savedEntity.setAccounts(List.of(subEntity));
         var appUserEntity = new hu.codemosaic.taller.entity.AppUserEntity();
         appUserEntity.setUsername("jane_doe");
         savedEntity.setOwner(appUserEntity); // assuming constructor or setter
 
-        when(accountRepository.save(any(AccountEntity.class))).thenReturn(savedEntity);
+        when(accountContainerRepository.save(any(AccountContainerEntity.class))).thenReturn(savedEntity);
         when(appUserDb.findByUsername("jane_doe")).thenReturn(appUserEntity);
 
         // Act
-        AccountDto result = accountService.createAccount(inputDto, "jane_doe");
+        AccountContainerDto result = accountService.createAccount(inputDto, "jane_doe");
 
         // Assert
         assertEquals("New Account", result.getName());

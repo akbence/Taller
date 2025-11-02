@@ -1,11 +1,11 @@
 package hu.codemosaic.taller.service;
 
 import hu.codemosaic.taller.db.AppUserDb;
+import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.dto.AccountDto;
-import hu.codemosaic.taller.dto.SubAccountDto;
+import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.entity.AccountEntity;
-import hu.codemosaic.taller.entity.SubAccountEntity;
-import hu.codemosaic.taller.repository.AccountRepository;
+import hu.codemosaic.taller.repository.AccountContainerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final AccountRepository accountRepository;
+    private final AccountContainerRepository accountContainerRepository;
     private final AppUserDb appUserDb;
 
-    public List<AccountDto> getAllAccounts() {
-        return accountRepository.findAll().stream().map(accountEntity -> AccountDto.builder()
-                .name(accountEntity.getName())
-                .subaccounts(accountEntity.getSubaccounts().stream()
-                    .map(entity -> SubAccountDto.builder()
+    public List<AccountContainerDto> getAllAccounts() {
+        return accountContainerRepository.findAll().stream().map(accountContainerEntity -> AccountContainerDto.builder()
+                .name(accountContainerEntity.getName())
+                .subaccounts(accountContainerEntity.getAccounts().stream()
+                    .map(entity -> AccountDto.builder()
                         .name(entity.getName())
                         .balance(entity.getBalance())
                         .currency(entity.getCurrency())
@@ -33,16 +33,16 @@ public class AccountService {
             .toList();
     }
 
-    public AccountDto createAccount(AccountDto accountDto, String currentUsername) {
-        AccountEntity entity = new AccountEntity();
-        entity.setName(accountDto.getName());
+    public AccountContainerDto createAccount(AccountContainerDto accountContainerDto, String currentUsername) {
+        AccountContainerEntity entity = new AccountContainerEntity();
+        entity.setName(accountContainerDto.getName());
         entity.setOwner(appUserDb.findByUsername(currentUsername));
-        entity.setSubaccounts(mapSubAccountEntitiesFromAccountDto(accountDto));
-        var result = accountRepository.save(entity);
-        return AccountDto.builder()
+        entity.setAccounts(mapSubAccountEntitiesFromAccountDto(accountContainerDto));
+        var result = accountContainerRepository.save(entity);
+        return AccountContainerDto.builder()
                 .name(result.getName())
-                .subaccounts(result.getSubaccounts().stream()
-                    .map(subEntity -> SubAccountDto.builder()
+                .subaccounts(result.getAccounts().stream()
+                    .map(subEntity -> AccountDto.builder()
                         .name(subEntity.getName())
                         .balance(subEntity.getBalance())
                         .currency(subEntity.getCurrency())
@@ -52,13 +52,13 @@ public class AccountService {
                 .build();
     }
 
-    private List<SubAccountEntity> mapSubAccountEntitiesFromAccountDto(AccountDto accountDto) {
-        return accountDto.getSubaccounts().stream().map(subAccountDto -> {
-            SubAccountEntity subAccountEntity = new SubAccountEntity();
-            subAccountEntity.setName(subAccountDto.getName());
-            subAccountEntity.setBalance(subAccountDto.getBalance());
-            subAccountEntity.setCurrency(subAccountDto.getCurrency());
-            return subAccountEntity;
+    private List<AccountEntity> mapSubAccountEntitiesFromAccountDto(AccountContainerDto accountContainerDto) {
+        return accountContainerDto.getSubaccounts().stream().map(accountDto -> {
+            AccountEntity accountEntity = new AccountEntity();
+            accountEntity.setName(accountDto.getName());
+            accountEntity.setBalance(accountDto.getBalance());
+            accountEntity.setCurrency(accountDto.getCurrency());
+            return accountEntity;
         }).toList();
     }
 }
