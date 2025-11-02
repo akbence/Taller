@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity
+@Entity(name = "accountTransaction")
 @Data
 public class AccountTransactionEntity extends BaseEntity{
 

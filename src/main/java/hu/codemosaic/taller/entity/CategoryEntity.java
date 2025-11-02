@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import static jakarta.persistence.FetchType.LAZY;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity
+@Entity(name = "category")
 @Data
 public class CategoryEntity extends BaseEntity{
 
