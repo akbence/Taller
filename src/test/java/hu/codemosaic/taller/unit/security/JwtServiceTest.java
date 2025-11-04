@@ -1,8 +1,12 @@
 package hu.codemosaic.taller.unit.security;
 
+import hu.codemosaic.taller.entity.AppUserEntity;
 import hu.codemosaic.taller.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,14 +25,19 @@ class JwtServiceTest {
     void testGenerateToken_returnsValidJwt() {
         // Arrange
         String username = "testuser";
+        UUID userId = UUID.randomUUID();
+        AppUserEntity appUserEntity = new AppUserEntity();
+        appUserEntity.setUsername(username);
+        appUserEntity.setId(userId);
 
         // Act
-        String token = jwtService.generateToken(username);
+        String token = jwtService.generateToken(appUserEntity);
 
         // Assert
         assertNotNull(token);
         assertTrue(jwtService.isValidToken(token));
-        assertEquals(username, jwtService.extractUsername(token));
+        assertEquals(username, jwtService.extractUserContext(token).get("username"));
+        assertEquals(userId.toString(), jwtService.extractUserContext(token).get("userId"));
     }
 
     @Test
@@ -44,16 +53,21 @@ class JwtServiceTest {
     }
 
     @Test
-    void testExtractUsername_returnsCorrectUsername() {
+    void testExtractUsername_returnsCorrectUserContext() {
         // Arrange
-        String username = "bence";
-        String token = jwtService.generateToken(username);
+        String username = "testuser";
+        UUID userId = UUID.randomUUID();
+        AppUserEntity appUserEntity = new AppUserEntity();
+        appUserEntity.setUsername(username);
+        appUserEntity.setId(userId);
+        String token = jwtService.generateToken(appUserEntity);
 
         // Act
-        String extracted = jwtService.extractUsername(token);
+        Map<String,String> extracted = jwtService.extractUserContext(token);
 
         // Assert
-        assertEquals(username, extracted);
+        assertEquals(username, extracted.get("username"));
+        assertEquals(userId.toString(), extracted.get("userId"));
     }
 }
 

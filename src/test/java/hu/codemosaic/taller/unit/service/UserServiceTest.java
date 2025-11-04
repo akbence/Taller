@@ -89,7 +89,7 @@ class UserServiceTest {
         userEntity.setUsername(username);
 
         when(appUserDb.findByUsername(username)).thenReturn(userEntity);
-        when(jwtService.generateToken(username)).thenReturn(expectedToken);
+        when(jwtService.generateToken(any())).thenReturn(expectedToken);
 
         // Act
         String resultToken = userService.login(username, password);
@@ -98,7 +98,7 @@ class UserServiceTest {
         assertNotNull(resultToken);
         assertEquals(expectedToken, resultToken);
         verify(appUserDb, times(1)).findByUsername(username);
-        verify(jwtService, times(1)).generateToken(username);
+        verify(jwtService, times(1)).generateToken(any());
     }
 
     @Test
@@ -113,6 +113,6 @@ class UserServiceTest {
         // Assert
         assertThrows(RuntimeException.class, ()-> userService.login(username, password));
         verify(appUserDb, times(1)).findByUsername(username);
-        verify(jwtService, never()).generateToken(anyString()); // Ensure token generation is skipped
+        verify(jwtService, never()).generateToken(any()); // Ensure token generation is skipped
     }
 }

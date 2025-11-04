@@ -1,9 +1,7 @@
 package hu.codemosaic.taller.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import hu.codemosaic.taller.enums.TransactionType;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,6 +18,9 @@ public class AccountTransactionEntity extends BaseEntity{
     private double latitude;
     private double longitude;
     private Instant transactionTime;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

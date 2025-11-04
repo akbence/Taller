@@ -20,7 +20,7 @@ public class AccountContainerEntity extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     private AppUserEntity owner;
 
-    @OneToMany(mappedBy = "accountContainer", fetch = LAZY)
+    @OneToMany(mappedBy = "accountContainer", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountEntity> accounts = new ArrayList<>();
 
 }

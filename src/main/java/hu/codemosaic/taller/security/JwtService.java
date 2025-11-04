@@ -1,14 +1,13 @@
 package hu.codemosaic.taller.security;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import hu.codemosaic.taller.entity.AppUserEntity;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class JwtService {
@@ -18,9 +17,12 @@ public class JwtService {
     public JwtService(@Value("${jwt.secret}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
-    public String generateToken(String username) {
+    public String generateToken(AppUserEntity user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", user.getUsername());
         return Jwts.builder()
-                .setSubject(username)
+                .setClaims(claims)
+                .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -39,13 +41,21 @@ public class JwtService {
         }
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parserBuilder()
+    public Map<String,String> extractUserContext(String token) {
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+
+
+        String username = claims.get("username", String.class);
+        String userId = claims.getSubject();
+
+        return Map.of(
+                "username", username,
+                "userId", userId
+        );
     }
 }
 

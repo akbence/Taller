@@ -8,6 +8,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -64,8 +66,9 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (token != null && token.startsWith("Bearer ")) {
             String rawToken = token.substring(7);
             if (jwtService.isValidToken(rawToken)) {
-                String username = jwtService.extractUsername(rawToken);
-                UserContext.setUsername(username); // ✅ store in context
+                Map<String,String> userCtx = jwtService.extractUserContext(rawToken);
+                UserContext.setUsername(userCtx.get("username"));
+                UserContext.setUserId(UUID.fromString(userCtx.get("userId")));
                 return true;
             }
         }
@@ -84,6 +87,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        UserContext.clear(); // ✅ cleanup
+        UserContext.clear();
     }
 }

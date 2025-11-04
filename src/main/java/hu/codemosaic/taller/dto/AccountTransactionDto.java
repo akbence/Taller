@@ -1,8 +1,7 @@
 package hu.codemosaic.taller.dto;
 
-import hu.codemosaic.taller.entity.AppUserEntity;
 import hu.codemosaic.taller.entity.BaseEntity;
-import hu.codemosaic.taller.entity.CategoryEntity;
+import hu.codemosaic.taller.enums.TransactionType;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +19,8 @@ public class AccountTransactionDto extends BaseEntity {
     private double latitude;
     private double longitude;
     private Instant transactionTime;
+    private TransactionType transactionType;
 
-    private CategoryEntity category;
-    private AppUserEntity appUserEntity;
+    private AccountDto account;
+    private CategoryDto category;
 }

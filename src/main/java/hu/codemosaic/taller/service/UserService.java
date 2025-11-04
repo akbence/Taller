@@ -35,6 +35,6 @@ public class UserService {
     public String login(String username, String password) {
         //Todo: implement real authentication for password
         var user = appUserDb.findByUsername(username);
-        return jwtService.generateToken(user.getUsername());
+        return jwtService.generateToken(user);
     }
 }

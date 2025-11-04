@@ -17,7 +17,7 @@ public class CategoryEntity extends BaseEntity{
     private String description;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner", nullable = false)
     private AppUserEntity owner;
 
 }

@@ -18,7 +18,7 @@ public class TransactionController extends BaseApiController{
 
     @PostMapping
     public ResponseEntity<AccountTransactionDto> createTransaction(@RequestBody AccountTransactionDto accountTransactionDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createTransaction(accountTransactionDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createTransaction(accountTransactionDto, getCurrentUserId()));
 
     }
 
