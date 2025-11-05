@@ -7,7 +7,6 @@ import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.entity.AccountEntity;
-import hu.codemosaic.taller.exception.ContainerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +25,7 @@ public class AccountService {
     public List<AccountContainerDto> getAllAccountsByOwnerId(UUID currentUserId) {
         return accountContainerDb.findAllByOwnerId(currentUserId).stream().map(accountContainerEntity -> AccountContainerDto.builder()
                 .name(accountContainerEntity.getName())
+                .id(accountContainerEntity.getId())
                 .subaccounts(accountContainerEntity.getAccounts().stream()
                     .map(entity -> AccountDto.builder()
                         .name(entity.getName())

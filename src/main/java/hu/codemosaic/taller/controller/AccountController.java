@@ -3,7 +3,6 @@ package hu.codemosaic.taller.controller;
 import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.security.Auth;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +34,7 @@ public class AccountController extends BaseApiController{
 
     @Auth
     @GetMapping("/{containerId}/accounts")
-    public ResponseEntity<List<AccountDto>> getAccountsByContainerId(@PathParam(value = "containerId") UUID containerId) {
-        return ResponseEntity.ok(accountService.getAccountsByContainerId(containerId, getCurrentUserId()));
+    public ResponseEntity<List<AccountDto>> getAccountsByContainerId(@PathVariable(value = "containerId") String containerId) {
+        return ResponseEntity.ok(accountService.getAccountsByContainerId(UUID.fromString(containerId), getCurrentUserId()));
     }
 }
