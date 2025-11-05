@@ -18,6 +18,7 @@ public class AccountContainerEntity extends BaseEntity {
     private String name;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
     private AppUserEntity owner;
 
     @OneToMany(mappedBy = "accountContainer", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

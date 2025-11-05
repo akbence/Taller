@@ -1,26 +1,30 @@
 package hu.codemosaic.taller.service;
 
+import hu.codemosaic.taller.db.AccountContainerDb;
+import hu.codemosaic.taller.db.AccountDb;
 import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.entity.AccountEntity;
-import hu.codemosaic.taller.repository.AccountContainerRepository;
+import hu.codemosaic.taller.exception.ContainerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final AccountContainerRepository accountContainerRepository;
+    private final AccountContainerDb accountContainerDb;
+    private final AccountDb accountDb;
     private final AppUserDb appUserDb;
 
-    public List<AccountContainerDto> getAllAccounts() {
-        return accountContainerRepository.findAll().stream().map(accountContainerEntity -> AccountContainerDto.builder()
+    public List<AccountContainerDto> getAllAccountsByOwnerId(UUID currentUserId) {
+        return accountContainerDb.findAllByOwnerId(currentUserId).stream().map(accountContainerEntity -> AccountContainerDto.builder()
                 .name(accountContainerEntity.getName())
                 .subaccounts(accountContainerEntity.getAccounts().stream()
                     .map(entity -> AccountDto.builder()
@@ -35,12 +39,12 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountContainerDto createAccount(AccountContainerDto accountContainerDto, String currentUsername) {
+    public AccountContainerDto createAccountContainer(AccountContainerDto accountContainerDto, String currentUsername) {
         AccountContainerEntity entity = new AccountContainerEntity();
         entity.setName(accountContainerDto.getName());
         entity.setOwner(appUserDb.findByUsername(currentUsername));
         entity.setAccounts(mapSubAccountEntitiesFromAccountDto(accountContainerDto, entity));
-        var result = accountContainerRepository.save(entity);
+        var result = accountContainerDb.save(entity);
         return AccountContainerDto.builder()
                 .name(result.getName())
                 .subaccounts(result.getAccounts().stream()
@@ -54,6 +58,18 @@ public class AccountService {
                     .toList())
                 .build();
     }
+
+    public List<AccountDto> getAccountsByContainerId(UUID containerId, UUID currentUserId) {
+        return accountDb.findByContainerIdAndOwnerId(containerId, currentUserId).stream()
+                .map(accountEntity -> AccountDto.builder()
+                        .accountType(accountEntity.getAccountType())
+                        .name(accountEntity.getName())
+                        .balance(accountEntity.getBalance())
+                        .currency(accountEntity.getCurrency())
+                        .build())
+                .toList();
+    }
+
 
     private List<AccountEntity> mapSubAccountEntitiesFromAccountDto(AccountContainerDto accountContainerDto, AccountContainerEntity accountContainerEntity) {
         return accountContainerDto.getSubaccounts().stream().map(accountDto -> {

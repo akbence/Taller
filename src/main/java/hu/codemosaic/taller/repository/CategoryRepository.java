@@ -13,5 +13,5 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, UUID> 
 
     List<CategoryEntity> findByOwner_Id(UUID appUserId);
 
-    Optional<CategoryEntity> findByIdAndOwner_Id(UUID categoryId, UUID userId);
+    Optional<CategoryEntity> findByIdAndOwnerId(UUID categoryId, UUID userId);
 }

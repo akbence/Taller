@@ -26,7 +26,7 @@ public class TransactionService {
         entity.setLatitude(accountTransactionDto.getLatitude());
         entity.setLongitude(accountTransactionDto.getLongitude());
         entity.setTransactionType(accountTransactionDto.getTransactionType());
-        var categoryEntity = categoryRepository.findByIdAndOwner_Id(accountTransactionDto.getCategory().getId(),currentUserId)
+        var categoryEntity = categoryRepository.findByIdAndOwnerId(accountTransactionDto.getCategory().getId(),currentUserId)
             .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
         entity.setCategory(categoryEntity);
 
