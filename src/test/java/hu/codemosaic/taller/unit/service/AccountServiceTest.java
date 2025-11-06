@@ -8,6 +8,7 @@ import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.entity.AccountEntity;
 import hu.codemosaic.taller.entity.AppUserEntity;
+import hu.codemosaic.taller.enums.AccountType;
 import hu.codemosaic.taller.enums.Currency;
 import hu.codemosaic.taller.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ class AccountServiceTest {
     private AccountContainerDb accountContainerDb;
     private AccountService accountService;
     private AppUserDb appUserDb;
-    private AccountDb accountDb = mock(AccountDb.class);
+    private final AccountDb accountDb = mock(AccountDb.class);
 
     @BeforeEach
     void setup() {
@@ -105,5 +106,32 @@ class AccountServiceTest {
         assertEquals("New Account", result.getName());
         assertEquals(1, result.getSubaccounts().size());
         assertEquals("Checking", result.getSubaccounts().getFirst().getName());
+    }
+
+    @Test
+    void getAccountsByContainerId_returnsMappedDtos() {
+        // Arrange
+        UUID containerId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setName("Savings");
+        accountEntity.setBalance(BigDecimal.valueOf(1000));
+        accountEntity.setCurrency(Currency.USD);
+        accountEntity.setAccountType(AccountType.CHECKING);
+
+        when(accountDb.findByContainerIdAndOwnerId(containerId, userId))
+                .thenReturn(List.of(accountEntity));
+
+        // Act
+        List<AccountDto> result = accountService.getAccountsByContainerId(containerId, userId);
+
+        // Assert
+        assertEquals(1, result.size());
+        AccountDto dto = result.getFirst();
+        assertEquals("Savings", dto.getName());
+        assertEquals(BigDecimal.valueOf(1000), dto.getBalance());
+        assertEquals(Currency.USD, dto.getCurrency());
+        assertEquals(AccountType.CHECKING, dto.getAccountType());
     }
 }
