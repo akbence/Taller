@@ -1,65 +1,76 @@
 package hu.codemosaic.taller.unit.service;
 
+import hu.codemosaic.taller.db.AccountContainerDb;
+import hu.codemosaic.taller.db.AccountDb;
 import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.dto.AccountContainerDto;
 import hu.codemosaic.taller.dto.AccountDto;
 import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.entity.AccountEntity;
+import hu.codemosaic.taller.entity.AppUserEntity;
 import hu.codemosaic.taller.enums.Currency;
-import hu.codemosaic.taller.repository.AccountContainerRepository;
 import hu.codemosaic.taller.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AccountServiceTest {
 
-    private AccountContainerRepository accountContainerRepository;
+    private AccountContainerDb accountContainerDb;
     private AccountService accountService;
     private AppUserDb appUserDb;
+    private AccountDb accountDb = mock(AccountDb.class);
 
     @BeforeEach
     void setup() {
-        accountContainerRepository = mock(AccountContainerRepository.class);
+        accountContainerDb = mock(AccountContainerDb.class);
         appUserDb = mock(AppUserDb.class);
-        accountService = new AccountService(accountContainerRepository, appUserDb);
+        accountService = new AccountService(accountContainerDb, accountDb, appUserDb);
     }
 
     @Test
-    void testGetAllAccounts_returnsMappedDtos() {
+    void testGetAllAccountsByOwnerId_returnsMappedDtos() {
         // Arrange
-        AccountEntity sub1 = new AccountEntity();
-        sub1.setName("Savings");
-        sub1.setBalance(BigDecimal.valueOf(1000));
-        sub1.setCurrency(Currency.USD);
+        UUID userId = UUID.randomUUID();
 
-        AccountContainerEntity accountContainerEntity = new AccountContainerEntity();
-        accountContainerEntity.setName("Main Account");
-        accountContainerEntity.setAccounts(List.of(sub1));
-        var appUserEntity = new hu.codemosaic.taller.entity.AppUserEntity();
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setName("Savings");
+        accountEntity.setBalance(BigDecimal.valueOf(1000));
+        accountEntity.setCurrency(Currency.USD);
+
+        AccountContainerEntity containerEntity = new AccountContainerEntity();
+        containerEntity.setName("Main Account");
+        containerEntity.setAccounts(List.of(accountEntity));
+
+        AppUserEntity appUserEntity = new AppUserEntity();
+        appUserEntity.setId(userId);
         appUserEntity.setUsername("john_doe");
-        accountContainerEntity.setOwner(appUserEntity);
+        containerEntity.setOwner(appUserEntity);
 
-        when(accountContainerRepository.findAll()).thenReturn(List.of(accountContainerEntity));
+        when(accountContainerDb.findAllByOwnerId(userId)).thenReturn(List.of(containerEntity));
 
         // Act
-        List<AccountContainerDto> result = accountService.getAllAccounts();
+        List<AccountContainerDto> result = accountService.getAllAccountsByOwnerId(userId);
 
         // Assert
         assertEquals(1, result.size());
         AccountContainerDto dto = result.getFirst();
         assertEquals("Main Account", dto.getName());
         assertEquals(1, dto.getSubaccounts().size());
-        assertEquals("Savings", dto.getSubaccounts().getFirst().getName());
+        AccountDto subDto = dto.getSubaccounts().getFirst();
+        assertEquals("Savings", subDto.getName());
+        assertEquals(BigDecimal.valueOf(1000), subDto.getBalance());
+        assertEquals(Currency.USD, subDto.getCurrency());
     }
 
     @Test
-    void testCreateAccount_savesAndReturnsMappedDto() {
+    void testCreateAccount_Container_savesAndReturnsMappedDto() {
         // Arrange
         AccountDto subDto = AccountDto.builder()
                 .name("Checking")
@@ -84,11 +95,11 @@ class AccountServiceTest {
         appUserEntity.setUsername("jane_doe");
         savedEntity.setOwner(appUserEntity); // assuming constructor or setter
 
-        when(accountContainerRepository.save(any(AccountContainerEntity.class))).thenReturn(savedEntity);
+        when(accountContainerDb.save(any(AccountContainerEntity.class))).thenReturn(savedEntity);
         when(appUserDb.findByUsername("jane_doe")).thenReturn(appUserEntity);
 
         // Act
-        AccountContainerDto result = accountService.createAccount(inputDto, "jane_doe");
+        AccountContainerDto result = accountService.createAccountContainer(inputDto, "jane_doe");
 
         // Assert
         assertEquals("New Account", result.getName());
