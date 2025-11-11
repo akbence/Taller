@@ -1,6 +1,7 @@
 package hu.codemosaic.taller.db;
 
 import hu.codemosaic.taller.entity.AppUserEntity;
+import hu.codemosaic.taller.exception.EntityNotFoundException;
 import hu.codemosaic.taller.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class AppUserDb {
 
     public AppUserEntity findByUsername(String username) {
         return repository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
     }
 
     public AppUserEntity save(AppUserEntity user) {
@@ -28,6 +29,6 @@ public class AppUserDb {
 
     public AppUserEntity findById(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
 }

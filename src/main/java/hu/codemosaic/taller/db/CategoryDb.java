@@ -1,7 +1,7 @@
 package hu.codemosaic.taller.db;
 
 import hu.codemosaic.taller.entity.CategoryEntity;
-import hu.codemosaic.taller.exception.CategoryNotFoundException;
+import hu.codemosaic.taller.exception.EntityNotFoundException;
 import hu.codemosaic.taller.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,6 @@ public class CategoryDb {
 
     public CategoryEntity findByIdAndOwnerId(UUID id, UUID currentUserId) {
         return repository.findByIdAndOwnerId(id, currentUserId)
-                .orElseThrow(()-> new CategoryNotFoundException("Category not found with id: " + id));
+                .orElseThrow(()-> new EntityNotFoundException("Category not found with id: " + id));
     }
 }
