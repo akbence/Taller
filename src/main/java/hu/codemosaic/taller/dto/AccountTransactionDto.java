@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -20,6 +21,8 @@ public class AccountTransactionDto extends BaseEntity {
     private double longitude;
     private Instant transactionTime;
     private TransactionType transactionType;
+    private UUID transferTargetAccountId;
+    private BigDecimal targetAmount;
 
     private AccountDto account;
     private CategoryDto category;

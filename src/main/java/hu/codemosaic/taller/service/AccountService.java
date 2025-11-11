@@ -28,9 +28,11 @@ public class AccountService {
                 .id(accountContainerEntity.getId())
                 .subaccounts(accountContainerEntity.getAccounts().stream()
                     .map(entity -> AccountDto.builder()
+                        .id(entity.getId())
                         .name(entity.getName())
                         .balance(entity.getBalance())
                         .currency(entity.getCurrency())
+                        .accountContainer(entity.getAccountContainer().getId())
                         .build()
                     )
                     .toList())
@@ -63,9 +65,11 @@ public class AccountService {
         return accountDb.findByContainerIdAndOwnerId(containerId, currentUserId).stream()
                 .map(accountEntity -> AccountDto.builder()
                         .accountType(accountEntity.getAccountType())
+                        .id(accountEntity.getId())
                         .name(accountEntity.getName())
                         .balance(accountEntity.getBalance())
                         .currency(accountEntity.getCurrency())
+                        .accountContainer(accountEntity.getAccountContainer().getId())
                         .build())
                 .toList();
     }

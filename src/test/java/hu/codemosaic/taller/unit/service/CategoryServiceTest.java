@@ -1,8 +1,8 @@
 package hu.codemosaic.taller.unit.service;
 
+import hu.codemosaic.taller.db.CategoryDb;
 import hu.codemosaic.taller.dto.CategoryDto;
 import hu.codemosaic.taller.entity.CategoryEntity;
-import hu.codemosaic.taller.repository.CategoryRepository;
 import hu.codemosaic.taller.security.UserContext;
 import hu.codemosaic.taller.service.CategoryService;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class CategoryServiceTest {
     private CategoryService categoryService;
 
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryDb categoryDb;
 
     @Test
     void getAllCategoriesForCurrentUser_returnsMappedDtos() {
@@ -40,7 +40,7 @@ class CategoryServiceTest {
 
         try (MockedStatic<UserContext> mockedUserContext = Mockito.mockStatic(UserContext.class)) {
             mockedUserContext.when(UserContext::getUserId).thenReturn(userId);
-            when(categoryRepository.findByOwner_Id(userId)).thenReturn(categoryEntities);
+            when(categoryDb.findAllByOwnerId(userId)).thenReturn(categoryEntities);
 
             // Act
             List<CategoryDto> result = categoryService.getAllCategoriesForCurrentUser();

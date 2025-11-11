@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,9 +20,5 @@ public class AccountContainerDb {
 
     public List<AccountContainerEntity> findAllByOwnerId(UUID ownerId) {
         return repository.findAllByOwnerId(ownerId);
-    }
-
-    public Optional<AccountContainerEntity> findByOwnerIdAndContainerId(UUID currentUserId, UUID containerId) {
-        return null;
     }
 }

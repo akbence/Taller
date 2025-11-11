@@ -28,5 +28,5 @@ public class AccountTransactionEntity extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private AppUserEntity appUserEntity;
+    private AppUserEntity owner;
 }

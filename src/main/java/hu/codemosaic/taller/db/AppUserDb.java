@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +24,10 @@ public class AppUserDb {
 
     public List<AppUserEntity> findAll() {
         return repository.findAll();
+    }
+
+    public AppUserEntity findById(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 }

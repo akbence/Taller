@@ -1,6 +1,5 @@
 package hu.codemosaic.taller.dto;
 
-import hu.codemosaic.taller.entity.AccountContainerEntity;
 import hu.codemosaic.taller.enums.AccountType;
 import hu.codemosaic.taller.enums.Currency;
 import lombok.Builder;
@@ -21,7 +20,7 @@ public class AccountDto {
 
     private Currency currency;
 
-    private AccountContainerEntity account;
+    private UUID accountContainer;
 
     private BigDecimal balance;
 }

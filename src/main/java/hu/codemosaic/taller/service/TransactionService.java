@@ -1,10 +1,10 @@
 package hu.codemosaic.taller.service;
 
+import hu.codemosaic.taller.db.AppUserDb;
+import hu.codemosaic.taller.db.CategoryDb;
 import hu.codemosaic.taller.dto.AccountTransactionDto;
 import hu.codemosaic.taller.entity.AccountTransactionEntity;
-import hu.codemosaic.taller.exception.CategoryNotFoundException;
 import hu.codemosaic.taller.repository.AccountTransactionRepository;
-import hu.codemosaic.taller.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,8 @@ import java.util.UUID;
 public class TransactionService {
 
     private final AccountTransactionRepository accountTransactionRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryDb categoryDb;
+    private final AppUserDb appUserDb;
 
     public AccountTransactionDto createTransaction(AccountTransactionDto accountTransactionDto, UUID currentUserId) {
         AccountTransactionEntity entity = new AccountTransactionEntity();
@@ -26,8 +27,9 @@ public class TransactionService {
         entity.setLatitude(accountTransactionDto.getLatitude());
         entity.setLongitude(accountTransactionDto.getLongitude());
         entity.setTransactionType(accountTransactionDto.getTransactionType());
-        var categoryEntity = categoryRepository.findByIdAndOwnerId(accountTransactionDto.getCategory().getId(),currentUserId)
-            .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+        var appUserEntity = appUserDb.findById(currentUserId);
+        entity.setOwner(appUserEntity);
+        var categoryEntity = categoryDb.findByIdAndOwnerId(accountTransactionDto.getCategory().getId(), currentUserId);
         entity.setCategory(categoryEntity);
 
         var result = accountTransactionRepository.save(entity);

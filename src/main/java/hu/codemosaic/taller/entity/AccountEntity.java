@@ -19,6 +19,8 @@ public class AccountEntity extends BaseEntity {
     @Column(nullable = false)
     private AccountType accountType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Currency currency;
 
     @ManyToOne(fetch = FetchType.LAZY)

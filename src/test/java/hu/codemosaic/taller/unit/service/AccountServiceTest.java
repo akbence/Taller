@@ -39,11 +39,15 @@ class AccountServiceTest {
     void testGetAllAccountsByOwnerId_returnsMappedDtos() {
         // Arrange
         UUID userId = UUID.randomUUID();
+        UUID acId = UUID.randomUUID();
 
         AccountEntity accountEntity = new AccountEntity();
         accountEntity.setName("Savings");
         accountEntity.setBalance(BigDecimal.valueOf(1000));
         accountEntity.setCurrency(Currency.USD);
+        var ac =  new AccountContainerEntity();
+        ac.setId(acId);
+        accountEntity.setAccountContainer(ac);
 
         AccountContainerEntity containerEntity = new AccountContainerEntity();
         containerEntity.setName("Main Account");
@@ -66,6 +70,7 @@ class AccountServiceTest {
         assertEquals(1, dto.getSubaccounts().size());
         AccountDto subDto = dto.getSubaccounts().getFirst();
         assertEquals("Savings", subDto.getName());
+        assertEquals(acId, subDto.getAccountContainer());
         assertEquals(BigDecimal.valueOf(1000), subDto.getBalance());
         assertEquals(Currency.USD, subDto.getCurrency());
     }
@@ -119,6 +124,9 @@ class AccountServiceTest {
         accountEntity.setBalance(BigDecimal.valueOf(1000));
         accountEntity.setCurrency(Currency.USD);
         accountEntity.setAccountType(AccountType.CHECKING);
+        var ac =  new AccountContainerEntity();
+        ac.setId(containerId);
+        accountEntity.setAccountContainer(ac);
 
         when(accountDb.findByContainerIdAndOwnerId(containerId, userId))
                 .thenReturn(List.of(accountEntity));
@@ -132,6 +140,7 @@ class AccountServiceTest {
         assertEquals("Savings", dto.getName());
         assertEquals(BigDecimal.valueOf(1000), dto.getBalance());
         assertEquals(Currency.USD, dto.getCurrency());
+        assertEquals(containerId, dto.getAccountContainer());
         assertEquals(AccountType.CHECKING, dto.getAccountType());
     }
 }
