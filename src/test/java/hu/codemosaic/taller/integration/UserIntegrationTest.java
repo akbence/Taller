@@ -134,7 +134,6 @@ public class UserIntegrationTest {
                 .when()
                 .post(API_BASE_URL + "/user/login")
                 .then()
-                .statusCode(401) // Assuming 401 Unauthorized or 404 Not Found is returned for failed login
-                .body(emptyString()); // Assuming an empty response body on failure
+                .statusCode(404); // Assuming 401 Unauthorized or 404 Not Found is returned for failed login
     }
 }

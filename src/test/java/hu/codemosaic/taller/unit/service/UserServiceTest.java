@@ -3,6 +3,7 @@ package hu.codemosaic.taller.unit.service;
 import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.dto.UserDto;
 import hu.codemosaic.taller.entity.AppUserEntity;
+import hu.codemosaic.taller.exception.EntityNotFoundException;
 import hu.codemosaic.taller.security.JwtService;
 import hu.codemosaic.taller.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -107,11 +108,11 @@ class UserServiceTest {
         String username = "nonexistent";
         String password = "anypassword";
 
-        when(appUserDb.findByUsername(username)).thenThrow(RuntimeException.class);
+        when(appUserDb.findByUsername(username)).thenThrow(EntityNotFoundException.class);
 
         // Act
         // Assert
-        assertThrows(RuntimeException.class, ()-> userService.login(username, password));
+        assertThrows(EntityNotFoundException.class, ()-> userService.login(username, password));
         verify(appUserDb, times(1)).findByUsername(username);
         verify(jwtService, never()).generateToken(any()); // Ensure token generation is skipped
     }
