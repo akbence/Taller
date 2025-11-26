@@ -12,6 +12,7 @@ import java.util.*;
 @Service
 public class JwtService {
 
+    public static final String USERNAME = "username";
     private final Key key;
 
     public JwtService(@Value("${jwt.secret}") String secret) {
@@ -19,7 +20,7 @@ public class JwtService {
     }
     public String generateToken(AppUserEntity user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("username", user.getUsername());
+        claims.put(USERNAME, user.getUsername());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getId().toString())
@@ -49,11 +50,11 @@ public class JwtService {
                 .getBody();
 
 
-        String username = claims.get("username", String.class);
+        String username = claims.get(USERNAME, String.class);
         String userId = claims.getSubject();
 
         return Map.of(
-                "username", username,
+                USERNAME, username,
                 "userId", userId
         );
     }

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static hu.codemosaic.taller.util.MapperUtil.mapCategoryEntityToCategoryDto;
+import static hu.codemosaic.taller.util.MapperUtil.mapUserAccountEntityToAccountDto;
+
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -41,10 +44,17 @@ public class TransactionService {
     }
 
     public List<AccountTransactionDto> getAllTransactions() {
+        //Todo: filter by user
         return accountTransactionRepository.findAll().stream().map(transactionEntity -> AccountTransactionDto.builder()
-                .amount(transactionEntity.getAmount())
-                .transactionTime(transactionEntity.getTransactionTime())
-                .description(transactionEntity.getDescription())
+                        .description(transactionEntity.getDescription())
+                        .amount(transactionEntity.getAmount())
+                        .latitude(transactionEntity.getLatitude())
+                        .longitude(transactionEntity.getLongitude())
+                        .transactionTime(transactionEntity.getTransactionTime())
+                        .transactionType(transactionEntity.getTransactionType())
+                        .currency(transactionEntity.getCurrency())
+                        .targetAccount(mapUserAccountEntityToAccountDto(transactionEntity.getTargetAccount()))
+                        .category(mapCategoryEntityToCategoryDto(transactionEntity.getCategory()))
                 .build())
             .toList();
     }

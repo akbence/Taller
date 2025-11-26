@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Development supportative classes
+src/main/java/hu/codemosaic/taller/temp

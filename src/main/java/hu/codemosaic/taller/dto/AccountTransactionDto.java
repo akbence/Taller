@@ -1,6 +1,7 @@
 package hu.codemosaic.taller.dto;
 
 import hu.codemosaic.taller.entity.BaseEntity;
+import hu.codemosaic.taller.enums.Currency;
 import hu.codemosaic.taller.enums.TransactionType;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +23,7 @@ public class AccountTransactionDto extends BaseEntity {
     private Instant transactionTime;
     private TransactionType transactionType;
     private UUID transferTargetAccountId;
-    private BigDecimal targetAmount;
-
-    private AccountDto account;
+    private Currency currency;
+    private AccountDto targetAccount;
     private CategoryDto category;
 }

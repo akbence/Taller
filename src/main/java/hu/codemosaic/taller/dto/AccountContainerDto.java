@@ -1,6 +1,5 @@
 package hu.codemosaic.taller.dto;
 
-import hu.codemosaic.taller.enums.AccountType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,8 +12,5 @@ public class AccountContainerDto {
 
     private UUID id;
     private String name;
-    private AccountType accountType;
     private List<AccountDto> subaccounts;
-
-
 }

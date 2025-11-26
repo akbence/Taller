@@ -1,5 +1,6 @@
 package hu.codemosaic.taller.entity;
 
+import hu.codemosaic.taller.enums.Currency;
 import hu.codemosaic.taller.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,13 +12,20 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "accountTransaction")
 @Data
-public class AccountTransactionEntity extends BaseEntity{
+public class AccountTransactionEntity extends BaseEntity {
 
     private String description;
     private BigDecimal amount;
     private double latitude;
     private double longitude;
     private Instant transactionTime;
+
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_account_id")
+    private AccountEntity targetAccount;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;

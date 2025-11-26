@@ -2,16 +2,25 @@ package hu.codemosaic.taller.config;
 
 import hu.codemosaic.taller.security.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
+
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -20,17 +29,18 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**");
     }
 
-    /**
-     * Configure CORS settings to allow requests from the React frontend.
-     * The frontend still experimentally runs on a different port during development.
-     * @param registry CorsRegistry to configure CORS mappings
-     */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Apply to all API paths
-                .allowedOrigins("http://localhost:5173") // Allow requests from the React development server
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow necessary HTTP methods
-                .allowedHeaders("*") // Allow all headers, including Authorization
-                .allowCredentials(true); // Allow cookies or authentication headers (important for JWT)
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(allowedOrigins));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // minden API + actuator
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
     }
 }
