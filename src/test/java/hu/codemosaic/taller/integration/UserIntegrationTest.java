@@ -25,7 +25,8 @@ import static org.hamcrest.Matchers.*;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
-                "jwt.secret=a-secure-placeholder-secret-key-for-testing-only-1234567890"
+                "jwt.secret=a-secure-placeholder-secret-key-for-testing-only-1234567890",
+                "app.cors.allowed-origins=http://localhost:3000,http://127.0.0.1:3000",
         })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserIntegrationTest {
