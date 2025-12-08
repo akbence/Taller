@@ -103,13 +103,15 @@ def loadEnvFile(String path) {
 	def env = [:]
 	file(path).eachLine { line ->
 		if (!line.trim() || line.startsWith("#")) return
-		def (key, value) = line.split("=", 2)
-		env[key] = value
+		if (line.contains("=")) {
+			def (key, value) = line.split("=", 2)
+			env[key] = value
+		}
 	}
 	return env
 }
 
-def localEnv = loadEnvFile("local.env")
+def localEnv = file("local.env").exists() ? loadEnvFile("local.env") : [:]
 
 
 openApi {
