@@ -24,8 +24,9 @@ public class TransactionController extends BaseApiController{
 
     }
 
+    @Auth
     @GetMapping
     public ResponseEntity<List<AccountTransactionDto>> getTransactions() {
-        return ResponseEntity.ok(transactionService.getAllTransactions());
+        return ResponseEntity.ok(transactionService.getTransactions(getCurrentUserId()));
     }
 }

@@ -1,5 +1,6 @@
 package hu.codemosaic.taller.unit.service;
 
+import hu.codemosaic.taller.db.AccountTransactionDb;
 import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.db.CategoryDb;
 import hu.codemosaic.taller.dto.AccountTransactionDto;
@@ -41,6 +42,9 @@ class TransactionServiceTest {
     @Mock
     private AppUserDb appUserDb;
 
+    @Mock
+    private AccountTransactionDb accountTransactionDb;
+
     @Test
     void createTransaction_shouldMapAndSaveEntity() {
         // Arrange
@@ -79,17 +83,17 @@ class TransactionServiceTest {
     }
 
     @Test
-    void getAllTransactions_shouldReturnMappedDtos() {
+    void getTransactions_shouldReturnMappedDtos() {
         // Arrange
         AccountTransactionEntity entity = new AccountTransactionEntity();
         entity.setAmount(BigDecimal.valueOf(50));
         entity.setTransactionTime(Instant.now());
         entity.setDescription("Lunch");
 
-        when(accountTransactionRepository.findAll()).thenReturn(List.of(entity));
+        when(accountTransactionDb.findAllByUserId(any())).thenReturn(List.of(entity));
 
         // Act
-        List<AccountTransactionDto> result = transactionService.getAllTransactions();
+        List<AccountTransactionDto> result = transactionService.getTransactions(UUID.randomUUID());
 
         // Assert
         assertEquals(1, result.size());

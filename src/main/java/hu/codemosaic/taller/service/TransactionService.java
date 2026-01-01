@@ -1,5 +1,6 @@
 package hu.codemosaic.taller.service;
 
+import hu.codemosaic.taller.db.AccountTransactionDb;
 import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.db.CategoryDb;
 import hu.codemosaic.taller.dto.AccountTransactionDto;
@@ -18,7 +19,7 @@ import static hu.codemosaic.taller.util.MapperUtil.mapUserAccountEntityToAccount
 @RequiredArgsConstructor
 public class TransactionService {
 
-    private final AccountTransactionRepository accountTransactionRepository;
+    private final AccountTransactionDb accountTransactionDb;
     private final CategoryDb categoryDb;
     private final AppUserDb appUserDb;
 
@@ -35,7 +36,7 @@ public class TransactionService {
         var categoryEntity = categoryDb.findByIdAndOwnerId(accountTransactionDto.getCategory().getId(), currentUserId);
         entity.setCategory(categoryEntity);
 
-        var result = accountTransactionRepository.save(entity);
+        var result = accountTransactionDb.save(entity);
         return AccountTransactionDto.builder()
                 .amount(result.getAmount())
                 .transactionTime(result.getTransactionTime())
@@ -43,9 +44,8 @@ public class TransactionService {
                 .build();
     }
 
-    public List<AccountTransactionDto> getAllTransactions() {
-        //Todo: filter by user
-        return accountTransactionRepository.findAll().stream().map(transactionEntity -> AccountTransactionDto.builder()
+    public List<AccountTransactionDto> getTransactions(UUID currentUserId) {
+        return accountTransactionDb.findAllByUserId(currentUserId).stream().map(transactionEntity -> AccountTransactionDto.builder()
                         .description(transactionEntity.getDescription())
                         .amount(transactionEntity.getAmount())
                         .latitude(transactionEntity.getLatitude())
