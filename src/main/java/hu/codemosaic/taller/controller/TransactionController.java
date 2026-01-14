@@ -25,6 +25,12 @@ public class TransactionController extends BaseApiController{
     }
 
     @Auth
+    @PostMapping("/bulk")
+    public ResponseEntity<List<AccountTransactionDto>> createBulkTransactions(@RequestBody List<AccountTransactionDto> accountTransactionDtoList) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createBulkTransaction(accountTransactionDtoList, getCurrentUserId()));
+    }
+
+    @Auth
     @GetMapping
     public ResponseEntity<List<AccountTransactionDto>> getTransactions() {
         return ResponseEntity.ok(transactionService.getTransactions(getCurrentUserId()));

@@ -24,8 +24,8 @@ public class AccountTransactionEntity extends BaseEntity {
     private Currency currency;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_account_id")
-    private AccountEntity targetAccount;
+    @JoinColumn(name = "account_id")
+    private AccountEntity account;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;

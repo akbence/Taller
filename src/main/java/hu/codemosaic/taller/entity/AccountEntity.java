@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -26,6 +30,9 @@ public class AccountEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accountContainer_id", nullable = false)
     private AccountContainerEntity accountContainer;
+
+    @OneToMany(mappedBy = "account", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccountTransactionEntity> transactions = new ArrayList<>();
 
     private BigDecimal balance = BigDecimal.ZERO;
 

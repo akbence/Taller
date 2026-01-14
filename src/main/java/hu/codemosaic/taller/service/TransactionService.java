@@ -5,15 +5,15 @@ import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.db.CategoryDb;
 import hu.codemosaic.taller.dto.AccountTransactionDto;
 import hu.codemosaic.taller.entity.AccountTransactionEntity;
-import hu.codemosaic.taller.repository.AccountTransactionRepository;
+import hu.codemosaic.taller.util.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
-import static hu.codemosaic.taller.util.MapperUtil.mapCategoryEntityToCategoryDto;
-import static hu.codemosaic.taller.util.MapperUtil.mapUserAccountEntityToAccountDto;
+import static hu.codemosaic.taller.util.MapperUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,39 +23,43 @@ public class TransactionService {
     private final CategoryDb categoryDb;
     private final AppUserDb appUserDb;
 
-    public AccountTransactionDto createTransaction(AccountTransactionDto accountTransactionDto, UUID currentUserId) {
-        AccountTransactionEntity entity = new AccountTransactionEntity();
-        entity.setAmount(accountTransactionDto.getAmount());
-        entity.setTransactionTime(accountTransactionDto.getTransactionTime());
-        entity.setDescription(accountTransactionDto.getDescription());
-        entity.setLatitude(accountTransactionDto.getLatitude());
-        entity.setLongitude(accountTransactionDto.getLongitude());
-        entity.setTransactionType(accountTransactionDto.getTransactionType());
-        var appUserEntity = appUserDb.findById(currentUserId);
-        entity.setOwner(appUserEntity);
-        var categoryEntity = categoryDb.findByIdAndOwnerId(accountTransactionDto.getCategory().getId(), currentUserId);
-        entity.setCategory(categoryEntity);
-
-        var result = accountTransactionDb.save(entity);
-        return AccountTransactionDto.builder()
-                .amount(result.getAmount())
-                .transactionTime(result.getTransactionTime())
-                .description(result.getDescription())
-                .build();
+    @Transactional
+    public AccountTransactionDto createTransaction(AccountTransactionDto dto, UUID currentUserId) {
+        var entity = buildEntityFromDto(dto, currentUserId);
+        var saved = accountTransactionDb.save(entity);
+        return mapAccountTransactionEntityToAccountTransactionDto(saved);
     }
 
     public List<AccountTransactionDto> getTransactions(UUID currentUserId) {
-        return accountTransactionDb.findAllByUserId(currentUserId).stream().map(transactionEntity -> AccountTransactionDto.builder()
-                        .description(transactionEntity.getDescription())
-                        .amount(transactionEntity.getAmount())
-                        .latitude(transactionEntity.getLatitude())
-                        .longitude(transactionEntity.getLongitude())
-                        .transactionTime(transactionEntity.getTransactionTime())
-                        .transactionType(transactionEntity.getTransactionType())
-                        .currency(transactionEntity.getCurrency())
-                        .targetAccount(mapUserAccountEntityToAccountDto(transactionEntity.getTargetAccount()))
-                        .category(mapCategoryEntityToCategoryDto(transactionEntity.getCategory()))
-                .build())
-            .toList();
+        return accountTransactionDb.findAllByUserId(currentUserId).stream()
+                .map(MapperUtil::mapAccountTransactionEntityToAccountTransactionDto)
+                .toList();
+    }
+
+    @Transactional
+    public List<AccountTransactionDto> createBulkTransaction(List<AccountTransactionDto> dtoList, UUID currentUserId) {
+        return dtoList.stream()
+                .map(dto -> buildEntityFromDto(dto, currentUserId))
+                .map(accountTransactionDb::save)
+                .map(MapperUtil::mapAccountTransactionEntityToAccountTransactionDto)
+                .toList();
+    }
+
+    private AccountTransactionEntity buildEntityFromDto(AccountTransactionDto dto, UUID currentUserId) {
+        var entity = new AccountTransactionEntity();
+        entity.setAmount(dto.getAmount());
+        entity.setTransactionTime(dto.getTransactionTime());
+        entity.setDescription(dto.getDescription());
+        entity.setLatitude(dto.getLatitude());
+        entity.setLongitude(dto.getLongitude());
+        entity.setTransactionType(dto.getTransactionType());
+
+        var owner = appUserDb.findById(currentUserId);
+        entity.setOwner(owner);
+
+        var category = categoryDb.findByIdAndOwnerId(dto.getCategory().getId(), currentUserId);
+        entity.setCategory(category);
+
+        return entity;
     }
 }

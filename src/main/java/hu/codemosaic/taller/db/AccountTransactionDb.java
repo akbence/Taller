@@ -20,4 +20,8 @@ public class AccountTransactionDb {
     public AccountTransactionEntity save(AccountTransactionEntity entity) {
         return accountTransactionRepository.save(entity);
     }
+
+    public List<AccountTransactionEntity> saveAll(List<AccountTransactionEntity> entities) {
+        return accountTransactionRepository.saveAll(entities);
+    }
 }

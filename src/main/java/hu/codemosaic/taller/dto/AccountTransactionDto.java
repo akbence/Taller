@@ -24,6 +24,6 @@ public class AccountTransactionDto extends BaseEntity {
     private TransactionType transactionType;
     private UUID transferTargetAccountId;
     private Currency currency;
-    private AccountDto targetAccount;
+    private AccountDto account;
     private CategoryDto category;
 }
