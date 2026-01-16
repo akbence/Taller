@@ -38,9 +38,11 @@ public class TransactionService {
 
     @Transactional
     public List<AccountTransactionDto> createBulkTransaction(List<AccountTransactionDto> dtoList, UUID currentUserId) {
-        return dtoList.stream()
+        List<AccountTransactionEntity> entities = dtoList.stream()
                 .map(dto -> buildEntityFromDto(dto, currentUserId))
-                .map(accountTransactionDb::save)
+                .toList();
+        List<AccountTransactionEntity> saved = accountTransactionDb.saveAll(entities);
+        return saved.stream()
                 .map(MapperUtil::mapAccountTransactionEntityToAccountTransactionDto)
                 .toList();
     }
@@ -53,6 +55,8 @@ public class TransactionService {
         entity.setLatitude(dto.getLatitude());
         entity.setLongitude(dto.getLongitude());
         entity.setTransactionType(dto.getTransactionType());
+        entity.setCurrency(dto.getCurrency());
+        entity.setTransactionTime(dto.getTransactionTime());
 
         var owner = appUserDb.findById(currentUserId);
         entity.setOwner(owner);

@@ -17,6 +17,9 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +57,21 @@ public class RevolutIntegrationService {
                 try {
                     String type = data[0].trim();
                     String product = data[1].trim(); // not used currently
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                            .withZone(ZoneId.systemDefault());
+
                     Instant startedDate = Instant.now();
+
                     if (data.length > 6 && !data[2].isEmpty()) {
-                        try { startedDate = Instant.parse(data[6].trim()); } catch (DateTimeParseException e) {
-                            //todo: log warning
+                        try {
+                            startedDate = LocalDateTime.parse(data[2].trim(), formatter)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toInstant();
+                        } catch (DateTimeParseException e) {
+                            // TODO log warning
                         }
                     }
+
                     String completedDate = data[3].trim(); // not used currently
                     String description = data[4].trim();
                     BigDecimal amount = new BigDecimal(data[5].trim()).abs();
