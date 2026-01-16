@@ -1,5 +1,6 @@
 package hu.codemosaic.taller.service;
 
+import hu.codemosaic.taller.db.AccountDb;
 import hu.codemosaic.taller.db.AccountTransactionDb;
 import hu.codemosaic.taller.db.AppUserDb;
 import hu.codemosaic.taller.db.CategoryDb;
@@ -22,6 +23,7 @@ public class TransactionService {
     private final AccountTransactionDb accountTransactionDb;
     private final CategoryDb categoryDb;
     private final AppUserDb appUserDb;
+    private final AccountDb accountDb;
 
     @Transactional
     public AccountTransactionDto createTransaction(AccountTransactionDto dto, UUID currentUserId) {
@@ -63,6 +65,9 @@ public class TransactionService {
 
         var category = categoryDb.findByIdAndOwnerId(dto.getCategory().getId(), currentUserId);
         entity.setCategory(category);
+
+        var account = accountDb.findByContainerIdAndOwnerId(dto.getAccount().getId(), currentUserId).getFirst();
+        entity.setAccount(account);
 
         return entity;
     }
